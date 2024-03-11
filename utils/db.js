@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+const { MongoClient } = require('mongodb');
 
 const DB_HOST = process.env.DB_HOST || 'localhost';
 const DB_PORT = process.env.DB_PORT || 27017;
@@ -7,55 +7,28 @@ const url = `mongodb://${DB_HOST}:${DB_PORT}`;
 
 class DBClient {
   constructor() {
-    this.db = null;
-    this.users = null;
-    this.files = null;
-    this.connectToMongoDB();
+    MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
+      if (!err) {
+        this.db = client.db(DB_DATABASE);
+        this.users = this.db.collection('users');
+        this.files = this.db.collection('files');
+      } else {
+        console.log(err.message);
+        this.db = false;
+      }
+    });
   }
 
-  async connectToMongoDB() {
-    try {
-      const client = await MongoClient.connect(url, { useUnifiedTopology: true });
-      this.db = client.db(DB_DATABASE);
-      this.users = this.db.collection('users');
-      this.files = this.db.collection('files');
-      console.log('Connected to MongoDB');
-    } catch (error) {
-      console.error('Error connecting to MongoDB:', error.message);
-    }
-  }
+  isAlive() { return !!this.db; }
 
-  isAlive() {
-    return !!this.db;
-  }
+  async nbUsers() { return this.users.countDocuments(); }
 
-  async nbUsers() {
-    try {
-      return await this.users.countDocuments();
-    } catch (error) {
-      console.error('Error counting users:', error.message);
-      return 0;
-    }
-  }
-
-  async nbFiles() {
-    try {
-      return await this.files.countDocuments();
-    } catch (error) {
-      console.error('Error counting files:', error.message);
-      return 0;
-    }
-  }
+  async nbFiles() { return this.files.countDocuments(); }
 
   async getUser(query) {
-    try {
-      return await this.db.collection('users').findOne(query);
-    } catch (error) {
-      console.error('Error fetching user:', error.message);
-      return null;
-    }
+    const user = await this.db.collection('users').findOne(query);
+    return user;
   }
 }
 
-const dbClient = new DBClient();
-export default dbClient;
+module.exports = new DBClient();
