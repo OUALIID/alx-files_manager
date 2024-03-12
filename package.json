@@ -25,11 +25,11 @@
         "uuid": "^8.2.0"
     },
     "devDependencies": {
-        "@babel/cli": "^7.8.0",
-        "@babel/core": "^7.8.0",
-        "@babel/node": "^7.8.0",
-        "@babel/preset-env": "^7.8.2",
-        "@babel/register": "^7.8.0",
+        "@babel/cli": "^7.23.9",
+        "@babel/core": "^7.24.0",
+        "@babel/node": "^7.23.9",
+        "@babel/preset-env": "^7.24.0",
+        "@babel/register": "^7.23.7",
         "@types/node": "^20.11.25",
         "chai": "^4.2.0",
         "chai-http": "^4.3.0",
